@@ -1,7 +1,7 @@
 import pandas as pd 
 from matplotlib import pyplot as plt 
 
-def draw(df_show,path="HMM_Regime.png"):
+def draw(df,path="HMM_Regime.png"):
  N_STATES = 2  
  plt.figure(figsize=(15,6))  
   
