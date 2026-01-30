@@ -11,8 +11,8 @@ symbol = "SOLUSDT"
 interval = "15m"
 start_date = "2026-01-20"
 
-BOT_TOKEN = 8351810288:AAH3AM03vOpad12qwnG5dGa1JLl6lFBGXTk
-CHAT_ID   = 6590172921
+BOT_TOKEN = "8351810288:AAH3AM03vOpad12qwnG5dGa1JLl6lFBGXTk"
+CHAT_ID   = "6590172921"
 print('Bot_Token',BOT_TOKEN,"ID:",CHAT_ID)
 # =========================
 # Run pipeline
