@@ -13,7 +13,7 @@ start_date = "2026-01-20"
 
 BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 CHAT_ID   = os.getenv("TG_CHAT_ID")
-
+print('Bot_Token',BOT_TOKEN,"ID:",CHAT_ID)
 # =========================
 # Run pipeline
 # =========================
