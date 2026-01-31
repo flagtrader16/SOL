@@ -5,26 +5,12 @@ import joblib
 from scipy.stats import norm
 
 # ================================
-# Load HMM parameters ONCE
-# ================================
-PARAMS_PATH = "models/hmm_zscore_params.joblib"
-
-_params = joblib.load(PARAMS_PATH)
-
-N_STATES  = _params["N_STATES"]
-WINDOW_Z  = _params["WINDOW_Z"]
-transmat  = _params["transmat"]
-startprob = _params["startprob"]
-means     = _params["means"]
-vars_     = _params["vars"]
-
-# ================================
 # Forward-only step (causal)
 # ================================
-def _forward_step(alpha_prev, obs):
+def _forward_step(alpha_prev, obs,N_STATES,means,transmat,vars_):
     emission = np.array([
         norm.pdf(obs, loc=means[i], scale=np.sqrt(vars_[i]))
-        for i in range(N_STATES)
+        for i in range(2)
     ])
 
     alpha = emission * np.dot(alpha_prev, transmat)
@@ -34,7 +20,20 @@ def _forward_step(alpha_prev, obs):
 # ================================
 # Public function
 # ================================
-def apply_hmm_zscore(df: pd.DataFrame) -> pd.DataFrame:
+def apply_hmm_zscore(df: pd.DataFrame,path: str) -> pd.DataFrame:
+      
+# ================================
+# Load HMM parameters ONCE
+# ================================
+    PARAMS_PATH = path
+    params = joblib.load(PARAMS_PATH)
+    N_STATES  = params["N_STATES"]
+    WINDOW_Z  = params["WINDOW_Z"]
+    transmat  = params["transmat"]
+    startprob = params["startprob"]
+    means     = params["means"]
+    vars_     = params["vars"]
+
     """
     Takes df with columns: ['timestamp', 'close']
     Returns df with ['z', 'state', 'state_prob']
@@ -57,7 +56,7 @@ def apply_hmm_zscore(df: pd.DataFrame) -> pd.DataFrame:
     probs  = []
 
     for z in df["z"].values:
-        alpha = _forward_step(alpha, z)
+        alpha = _forward_step(alpha, z,N_STATES,means,transmat,vars_)
         states.append(int(np.argmax(alpha)))
         probs.append(float(np.max(alpha)))
 

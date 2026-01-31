@@ -1,40 +1,85 @@
+
 from get_data import get_binance_data_since
 from hmm_z import apply_hmm_zscore
 from graph import draw
 from telegram_bot import send_image
+
+from datetime import datetime
 import os
 
 # =========================
 # Config
 # =========================
-symbol = "SOLUSDT"
-interval = "15m"
-start_date = "2026-01-20"
+INTERVAL = "15m"
+START_DATE = "2026-01-21"
 
+SYMBOLS = {
+    "BTCUSDT": "models/hmm_zscoreBTC_params.joblib",
+    "ETHUSDT": "models/hmm_zscoreETH_params.joblib",
+    "SOLUSDT": "models/hmm_zscoreSOL_params.joblib",
+    "BNBUSDT": "models/hmm_zscoreBNB_params.joblib",
+}
+
+#BOT_TOKEN = os.getenv("TG_BOT_TOKEN") or "PUT_TOKEN_HERE"
+#CHAT_ID   = os.getenv("TG_CHAT_ID")   or "PUT_CHAT_ID_HERE"
 BOT_TOKEN = "8351810288:AAH3AM03vOpad12qwnG5dGa1JLl6lFBGXTk"
 CHAT_ID   = "6590172921"
-print('Bot_Token',BOT_TOKEN,"ID:",CHAT_ID)
+
+
 # =========================
-# Run pipeline
+# Anti-sleep heartbeat
 # =========================
-df = get_binance_data_since(symbol, interval, start_date)
+def anti_sleep():
+    now = datetime.utcnow().isoformat()
+    with open("heartbeat.txt", "w") as f:
+        f.write(f"Last run: {now}\n")
 
-df_show = apply_hmm_zscore(df)
 
-img_path = draw(df_show)
+# =========================
+# Main logic
+# =========================
+def run():
+    for symbol, model_path in SYMBOLS.items():
 
-last = df_show.iloc[-1]
+        # --- Fetch data
+        df = get_binance_data_since(
+            symbol=symbol,
+            interval=INTERVAL,
+            start_date=START_DATE
+        )
 
-caption = (
-    f"SOL 15m HMM Update\n"
-    f"Price: {last['close']:.2f}\n"
-    f"State: {int(last['state'])}\n"
-    f"Conf : {last['state_prob']:.2f}"
-)
+        # --- Apply HMM
+        df_show = apply_hmm_zscore(df, model_path)
 
-send_image(
-    image_path=img_path,
-    caption=caption,
-    bot_token=BOT_TOKEN,
-    chat_id=CHAT_ID
-)
+        # --- Draw plot
+        img_path = draw(
+            df_show,
+            path=f"HMM_Regime_{symbol}.png"
+        )
+
+        # --- Last state
+        last = df_show.iloc[-1]
+
+        caption = (
+            f"{symbol} | {INTERVAL}\n"
+            f"Price: {last['close']:.2f}\n"
+            f"State: {int(last['state'])}\n"
+            f"Conf : {last['state_prob']:.2f}"
+        )
+
+        # --- Send to Telegram
+        send_image(
+            image_path=img_path,
+            caption=caption,
+            bot_token=BOT_TOKEN,
+            chat_id=CHAT_ID
+        )
+
+    anti_sleep()
+
+
+# =========================
+# Entry point
+# =========================
+if __name__ == "__main__":
+    run()
