@@ -1,9 +1,9 @@
-name: SOL HMM Bot
+name: HMM Bot
 
 on:
-  workflow_dispatch:   # تشغيل يدوي
+  workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"   # كل 15 دقيقة
+    - cron: "2,17,32,47 * * * *"
 
 jobs:
   run-bot:
