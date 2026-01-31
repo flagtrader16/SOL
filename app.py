@@ -21,7 +21,7 @@ SYMBOLS = {
 }
 
 BOT_TOKEN = os.getenv("TG_BOT_TOKEN") 
-CHAT_ID   = os.getenv("TG_CHAT_ID")
+CHAT_ID   = -5078028908
 # =========================
 # Anti-sleep heartbeat
 # =========================
