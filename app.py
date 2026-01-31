@@ -22,10 +22,6 @@ SYMBOLS = {
 
 BOT_TOKEN = os.getenv("TG_BOT_TOKEN") 
 CHAT_ID   = os.getenv("TG_CHAT_ID")
-#BOT_TOKEN = "8351810288:AAH3AM03vOpad12qwnG5dGa1JLl6lFBGXTk"
-#CHAT_ID   = "6590172921"
-
-
 # =========================
 # Anti-sleep heartbeat
 # =========================
