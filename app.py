@@ -15,9 +15,9 @@ START_DATE = "2026-01-21"
 
 SYMBOLS = {
    # "BTCUSDT": "models/hmm_zscoreBTC_params.joblib",
-    "ETHUSDT": "models/hmm_zscoreETH_params.joblib",
+   #"ETHUSDT": "models/hmm_zscoreETH_params.joblib",
     "SOLUSDT": "models/hmm_zscoreSOL_params.joblib",
-    "BNBUSDT": "models/hmm_zscoreBNB_params.joblib",
+   #"BNBUSDT": "models/hmm_zscoreBNB_params.joblib",
 }
 
 BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
