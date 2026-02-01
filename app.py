@@ -20,10 +20,8 @@ SYMBOLS = {
     "BNBUSDT": "models/hmm_zscoreBNB_params.joblib",
 }
 
-BOT_TOKEN = "8351810288:AAH3AM03vOpad12qwnG5dGa1JLl6lFBGXTk"
-#= os.getenv("TG_BOT_TOKEN")
-CHAT_ID = "-5078028908"   
-#= os.getenv("TG_CHAT_ID")   
+BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
+CHAT_ID   = os.getenv("TG_CHAT_ID")   
 
 
 # =========================
