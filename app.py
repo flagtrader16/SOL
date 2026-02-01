@@ -3,10 +3,10 @@ from get_data import get_binance_data_since
 from hmm_z import apply_hmm_zscore
 from graph import draw
 from telegram_bot import send_image
-
+from telegram_bot import send_file
 from datetime import datetime
 import os
-
+import pandas as pd
 # =========================
 # Config
 # =========================
@@ -14,14 +14,18 @@ INTERVAL = "15m"
 START_DATE = "2026-01-21"
 
 SYMBOLS = {
-    "BTCUSDT": "models/hmm_zscoreBTC_params.joblib",
+   # "BTCUSDT": "models/hmm_zscoreBTC_params.joblib",
     "ETHUSDT": "models/hmm_zscoreETH_params.joblib",
     "SOLUSDT": "models/hmm_zscoreSOL_params.joblib",
     "BNBUSDT": "models/hmm_zscoreBNB_params.joblib",
 }
 
-BOT_TOKEN = os.getenv("TG_BOT_TOKEN") 
-CHAT_ID   = -5078028908
+BOT_TOKEN = "8351810288:AAH3AM03vOpad12qwnG5dGa1JLl6lFBGXTk"
+#= os.getenv("TG_BOT_TOKEN")
+CHAT_ID = "-5078028908"   
+#= os.getenv("TG_CHAT_ID")   
+
+
 # =========================
 # Anti-sleep heartbeat
 # =========================
@@ -47,12 +51,15 @@ def run():
         # --- Apply HMM
         df_show = apply_hmm_zscore(df, model_path)
 
-        # --- Draw plot
+        # --- Save plot
         img_path = draw(
             df_show,
             path=f"HMM_Regime_{symbol}.png"
         )
-
+        # --- Save Files
+        df_show = df_show[['timestamp','close','z','state','state_prob']]
+        df_show = df_show.round(1)
+        df_show.tail(10).to_csv(f"{symbol}.csv",index=False)
         # --- Last state
         last = df_show.iloc[-1]
 
@@ -62,7 +69,7 @@ def run():
             f"State: {int(last['state'])}\n"
             f"Conf : {last['state_prob']:.2f}"
         )
-
+         
         # --- Send to Telegram
         send_image(
             image_path=img_path,
@@ -70,9 +77,14 @@ def run():
             bot_token=BOT_TOKEN,
             chat_id=CHAT_ID
         )
-
+        #Send File To Telegram
+        send_file(
+           file_path=(f"{symbol}.csv"),
+           caption="HMM Data Snapshot (last 50 rows)",
+           bot_token=BOT_TOKEN,
+           chat_id=CHAT_ID
+)
     anti_sleep()
-
 
 # =========================
 # Entry point
