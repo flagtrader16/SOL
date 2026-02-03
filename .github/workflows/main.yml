@@ -1,16 +1,16 @@
-name: SOL HMM Bot
+#name: SOL HMM Bot
 
-on:
-  workflow_dispatch:
-  schedule:
-    # تشغيل كل 15 دقيقة تقريبًا (GitHub لا يضمن الدقة)
-    - cron: "2,17,32,47 * * * *"
+#on:
+ # workflow_dispatch:
+  #schedule:
+   # # تشغيل كل 15 دقيقة تقريبًا (GitHub لا يضمن الدقة)
+   # - cron: "2,17,32,47 * * * *"
 
-jobs:
-  run-bot:
-    runs-on: ubuntu-latest
+#jobs:
+ # run-bot:
+  #  runs-on: ubuntu-latest
 
-    steps:
+   # steps:
       # =====================
       # Checkout repository
       # =====================
