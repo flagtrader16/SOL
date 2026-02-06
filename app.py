@@ -55,7 +55,7 @@ def run():
             path=f"HMM_Regime_{symbol}.png"
         )
         # --- Save Files
-        df_show = df_show[['timestamp','close','z','state','state_prob']]
+        df_show = df_show[['timestamp','close','state','state_prob']]
         df_show = df_show.round(1)
         df_show.tail(10).to_csv(f"{symbol}.csv",index=False)
         # --- Last state
@@ -64,7 +64,7 @@ def run():
         caption = (
             f"{symbol} | {INTERVAL}\n"
             f"Price: {last['close']:.2f}\n"
-            f"State: {int(last['state'])}\n"
+            f"State: {(last['state'])}\n"
             f"Conf : {last['state_prob']:.2f}"
         )
          
