@@ -3,6 +3,15 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 style.use("seaborn-v0_8-whitegrid")
 
+def state_color(state):
+    if state == "BULL":
+        return "green"
+    elif state == "BEAR":
+        return "red"
+    else:
+        return "orange"
+
+
 def draw(df, path):
     df = df.copy()
 
@@ -25,7 +34,7 @@ def draw(df, path):
     # Background regimes
     # =========================
     for i in range(len(df) - 1):
-        color = "green" if df.loc[i, "state"] == 1 else "red"
+        color = state_color(df.loc[i,"state"])
         ax_price.axvspan(
             df.loc[i, "timestamp"],
             df.loc[i + 1, "timestamp"],
@@ -80,7 +89,7 @@ def draw(df, path):
     # =========================
     # Volume
     # =========================
-    vol_colors = ["green" if s == 1 else "red" for s in df["state"]]
+    vol_colors = state_color(df["state"])
 
     ax_vol.bar(
         df["timestamp"],
@@ -93,7 +102,7 @@ def draw(df, path):
     # =========================
     # Styling
     # =========================
-    ax_price.set_title("HMM Regime – Price & Volume (15m)", fontsize=14)
+    ax_price.set_title("HMM Regime & Price & Volume (15m)", fontsize=14)
     ax_price.legend(loc="upper left")
     ax_price.grid(alpha=0.3)
 
