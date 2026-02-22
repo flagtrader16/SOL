@@ -9,9 +9,9 @@ style.use("seaborn-v0_8-whitegrid")
 # Regime → Color
 # =========================
 def state_color(state):
-    if state == "BULL":
+    if state == 0:
         return "green"
-    elif state == "BEAR":
+    elif state == 2:
         return "red"
     else:
         return "orange"  # RANGE
