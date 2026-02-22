@@ -4,10 +4,11 @@ import pandas as pd
 import joblib
 from scipy.stats import multivariate_normal
 
+
 # ================================
 # Robust Z-score (IDENTICAL to training)
 # ================================
-def robust_zscore(series, window, clip=5.0):
+def robust_zscore(series, window, clip=5.0):  # 👈 clip ثابت داخليًا
     mean = series.rolling(window).mean()
     std  = series.rolling(window).std().replace(0, np.nan)
 
@@ -51,10 +52,8 @@ def apply_hmm_zscore(df: pd.DataFrame, path: str) -> pd.DataFrame:
 
     params = joblib.load(path)
 
-    N_STATES    = params["N_STATES"]
-    WINDOW_FAST = params["WINDOW_FAST"]
-    WINDOW_SLOW = params["WINDOW_SLOW"]
-    CLIP_Z      = params["CLIP_Z"]
+    WINDOW_Z = params["WINDOW_Z"]
+    # ❌ حذف CLIP_Z من params
 
     transmat  = params["transmat"]
     startprob = params["startprob"]
@@ -66,13 +65,12 @@ def apply_hmm_zscore(df: pd.DataFrame, path: str) -> pd.DataFrame:
     # =========================
     # Feature engineering (causal)
     # =========================
-    df["z_fast"] = robust_zscore(df["close"], WINDOW_FAST, CLIP_Z)
-    df["z_slow"] = robust_zscore(df["close"], WINDOW_SLOW, CLIP_Z)
+    df["z"] = robust_zscore(df["close"], WINDOW_Z)  # 👈 بدون تمرير clip
 
     df.dropna(inplace=True)
     df.reset_index(drop=True, inplace=True)
 
-    X = df[["z_fast", "z_slow"]].values
+    X = df[["z"]].values
 
     # =========================
     # Forward-only inference
@@ -86,27 +84,7 @@ def apply_hmm_zscore(df: pd.DataFrame, path: str) -> pd.DataFrame:
         states_raw.append(int(np.argmax(alpha)))
         probs.append(float(np.max(alpha)))
 
-    df["state_raw"]  = states_raw
+    df["state"] = states_raw
     df["state_prob"] = probs
-
-    # =========================
-    # 🔑 Regime labeling (symbol-agnostic)
-    # =========================
-    df["ret"] = df["close"].pct_change()
-
-    state_returns = (
-        df.groupby("state_raw")["ret"]
-        .mean()
-        .sort_values()
-    )
-
-    state_map = {}
-    state_map[state_returns.index[0]]  = "BEAR"
-    state_map[state_returns.index[-1]] = "BULL"
-
-    for s in state_returns.index[1:-1]:
-        state_map[s] = "RANGE"
-
-    df["state"] = df["state_raw"].map(state_map)
 
     return df
