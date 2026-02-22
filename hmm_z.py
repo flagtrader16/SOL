@@ -58,7 +58,7 @@ def apply_hmm_zscore(df: pd.DataFrame, path: str) -> pd.DataFrame:
     transmat  = params["transmat"]
     startprob = params["startprob"]
     means     = params["means"]
-    covars    = params["covars"]
+    covars    = params["vars"]
 
     df = df.copy()
 
